@@ -1,3 +1,11 @@
+/*
+ * dyson_dc41_release.jscad
+ *
+ * OpenJSCAD (openjscad.org) code for creating a 3D model of the Dyson DC41
+ * vacuum canister release button (upper piece) suitable for 3D printing.
+ *
+*/
+
 function clipSegment() {
     outer = union(
         difference(
@@ -145,6 +153,17 @@ function top_front() {
     return difference(x1,indent);
 }
 
+function sig() {
+    var sigpath = vector_text(0,0,'DSS');
+    var txta = [];
+    sigpath.forEach(function(pl) {
+        txta.push(rectangular_extrude(pl,{w:3,h:3}));
+    });
+    var mysig = union(txta);
+    return scale(0.25,mysig).rotateY(90).rotateZ(90)
+            .translate([7.5,7.5,22]);
+}
+
 function main() {
     return union(
         clipSegment(),
@@ -153,6 +172,7 @@ function main() {
         bottom_sec(),
         top_back(),
         top_front_base(),
-        top_front()
-    ).rotateY(90).translate([0,0,18]);
+        top_front(),
+        sig()
+    ).rotateY(90).translate([0,0,18]).setColor(.1,0.4,0.9,1);
 }
