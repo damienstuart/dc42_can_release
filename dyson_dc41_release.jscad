@@ -41,7 +41,7 @@ function back_plate() {
     var s = CAG.fromPoints([ [0,0],[-3,7],[-3,12],[13,12],[13,7],[10,0],[0,0] ]);
     var plate = linear_extrude({height: 1.5}, s).rotateX(90);
     var r = CAG.fromPoints([ [0,0],[0,7],[3,7],[0,0] ]);
-    var rib = linear_extrude({height: 1.5}, r).rotateX(90).rotateZ(90).translate([4.25,0,5])
+    var rib = linear_extrude({height: 1.5}, r).rotateX(90).rotateZ(90).translate([4.25,0,5]);
     return union(plate, rib).translate([0,7.75,26]);
 }
 
@@ -53,7 +53,7 @@ function bottom_sec() {
     var cyl = CSG.cylinder({
         start: [25,-18,5], end: [25,-12,5],
         radius: 5, resolution: 96
-    })
+    });
     var sec = union(plate, cyl);
 
     var s_inner = CAG.fromPoints([
@@ -63,7 +63,7 @@ function bottom_sec() {
     var cyl_inner = CSG.cylinder({
         start: [25,-18,3.25], end: [25,-13.5,3.25],
         radius: 3.25, resolution: 96
-    })
+    });
     var sec_inner = union(p_inner, cyl_inner).translate([0,0,1.75]);
 
     return difference(sec, sec_inner).rotateY(-90).rotateX(90).rotateZ(180);
@@ -77,28 +77,33 @@ function top_back() {
 }
 
 function top_front_base() {
-    var s = CAG.fromPoints([ [0,0],[5.5,0],[5.5,5.25],[18.5,5.25],[18.5,0],
-                             [24,0],[24,2.5],[23.25,2.5],[23.25,2],
+    var s = CAG.fromPoints([ [-1,0],[6,0],[6,5],[18,5],[18,0],
+                             [25,0],[25,2.5],[23.25,2.5],[23.25,2],
                              [20,2],[20,5.5],[23.25,5.5],[23.25,5.25],
-                             [24,5.25],[24,8],[0,8],[0,5.25],
+                             [25,5.25],[25,8],[-1,8],[-1,5.25],
                              [0.75,5.25],[0.75,5.5],[4,5.5],[4,2],
-                             [0.75,2],[0.75,2.5],[0,2.5],[0,0] ]);
+                             [0.75,2],[0.75,2.5],[-1,2.5],[-1,0] ]);
     return linear_extrude({height: 10}, s)
                 .translate([-7,-6,38]);
 }
 
 function top_front1() {
     var s1 = CAG.fromPoints([ [0,0],[10,13],[18,13],[8,0],[0,0] ]);
-    var s2 = CAG.fromPoints([ [6,0],[16,13],[18,13],[8,0],[6,0] ]);
+    var s2 = CAG.fromPoints([ [6,0],[16,13],[20,14],[8,0],[6,0] ]);
 
     var p1 = linear_extrude({height: 16}, s1).rotateX(90).rotateZ(-90);
-    var p2 = linear_extrude({height: 24}, s2).rotateX(90).rotateZ(-90)
-                .translate([4,0,0]);
+    var p2 = linear_extrude({height: 26}, s2).rotateX(90).rotateZ(-90)
+                .translate([5,0,0]);
 
     var sp = CAG.fromPoints([ [0,0],[0,10],[19.5,11],[0,0] ]);
     var strut = linear_extrude({height: 2}, sp).rotateX(90).rotateZ(-90)
                 .translate([-7,-13,7.25]);
-    return union(p1,p2,strut).translate([13,2,48]);
+
+    var b1 = CSG.cube({corner1:[0,0,0], corner2:[7,2,12.5]})
+                .rotateX(12).translate([-2,-8,-9]);
+    var b2 = b1.translate([-19,0,0]);
+
+    return union(p1, p2, strut, b1, b2).translate([13,2,48]);
 }
 
 function top_front() {
@@ -106,7 +111,8 @@ function top_front() {
                               [7,19],[26,19],[26,18],[10,13],[8,12],[6,10],[2.5,3],
                               [0,0]
                             ]);
-    var f2 = linear_extrude({height: 26}, s1).rotateX(90).rotateZ(-90)
+    var f2 = linear_extrude({height: 26}, s1)
+                .rotateX(90).rotateZ(-90)
                 .translate([18,-6,48]);
 
     var c1 = CSG.cylinder({
@@ -150,6 +156,7 @@ function top_front() {
     var x1 =  union(
         difference(union(top_front1(),f2), s2),
         s3, s4);
+
     return difference(x1,indent);
 }
 
@@ -174,5 +181,5 @@ function main() {
         top_front_base(),
         top_front(),
         sig()
-    ).rotateY(90).translate([0,0,18]).setColor(.1,0.4,0.9,1);
+    ).rotateY(90).translate([0,0,18]).setColor(0.1,0.4,0.9,1);
 }
